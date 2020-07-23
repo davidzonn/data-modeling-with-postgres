@@ -43,8 +43,11 @@ def process_log_file(cur, filepath):
     for i, row in user_df.iterrows():
         cur.execute(user_table_insert, row)
 
+    songplay_df = df.loc[:, ['userId', 'level', 'sessionId', 'location', 'userAgent', 'song', 'artist', 'length']]
+    songplay_df['ts'] = pd.to_datetime(df['ts'], unit='ms')
+
     # insert songplay records
-    for index, row in df.iterrows():
+    for index, row in songplay_df.iterrows():
         
         # get songid and artistid from song and artist tables
         results = cur.execute(song_select, (row.song, row.artist, row.length))
