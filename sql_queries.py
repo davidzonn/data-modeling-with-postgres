@@ -11,11 +11,11 @@ time_table_drop = "DROP TABLE IF EXISTS time"
 songplay_table_create = ("""
     CREATE TABLE IF NOT EXISTS songplays (
       id SERIAL PRIMARY KEY,
-      start_time TIMESTAMP,
-      user_id INT,
+      start_time TIMESTAMP REFERENCES time NOT NULL,
+      user_id INT NOT NULL REFERENCES users,
       level VARCHAR,
-      song_id VARCHAR,
-      artist_id VARCHAR,
+      song_id VARCHAR REFERENCES songs,
+      artist_id VARCHAR REFERENCES artists,
       session_id INT,
       location VARCHAR,
       user_agent VARCHAR
@@ -36,7 +36,7 @@ song_table_create = ("""
     CREATE TABLE IF NOT EXISTS songs (
       id VARCHAR PRIMARY KEY,
       title VARCHAR,
-      artist_id VARCHAR,
+      artist_id VARCHAR REFERENCES artists,
       year INT,
       duration NUMERIC (20, 5)
     );
@@ -74,7 +74,7 @@ songplay_table_insert = ("""
 user_table_insert = ("""
     INSERT INTO users ( id, first_name, last_name, gender, level )
     VALUES (%s, %s, %s, %s, %s)
-    ON CONFLICT DO NOTHING
+    ON CONFLICT(id) DO UPDATE SET level = EXCLUDED.level
 """)
 
 song_table_insert = ("""
@@ -107,5 +107,5 @@ song_select = ("""
 # QUERY LISTS
 
 
-create_table_queries = [songplay_table_create, user_table_create, song_table_create, artist_table_create, time_table_create]
-drop_table_queries = [songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
+create_table_queries = [user_table_create, artist_table_create, song_table_create, time_table_create, songplay_table_create]
+drop_table_queries = [user_table_drop, artist_table_drop, song_table_drop, time_table_drop, songplay_table_drop]
